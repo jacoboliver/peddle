@@ -1,0 +1,13 @@
+import com.typesafe.startscript.StartScriptPlugin
+
+seq(StartScriptPlugin.startScriptForClassesSettings: _*)
+
+name := "hello"
+
+version := "1.0"
+
+scalaVersion := "2.9.2"
+
+resolvers += "twitter-repo" at "http://maven.twttr.com"
+
+libraryDependencies += "com.twitter" %% "finagle-http" % "6.2.0"
