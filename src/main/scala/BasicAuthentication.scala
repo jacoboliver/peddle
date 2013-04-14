@@ -1,13 +1,11 @@
 package peddle
 
-import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse, HttpHeaders}
+import com.twitter.finagle.{Filter, Service}
+import com.twitter.util.Future
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.base64.Base64;
+import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse, HttpHeaders}
 import org.jboss.netty.util.CharsetUtil;
-import org.jboss.netty.handler.codec.base64.Base64;
-import com.twitter.finagle.Filter
-import com.twitter.finagle.Service
-import com.twitter.util.Future
 import util.Properties
 
 class BasicAuthentication()
