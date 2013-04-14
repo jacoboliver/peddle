@@ -11,7 +11,7 @@ import net.liftweb.json._
 import org.jboss.netty.handler.codec.http._
 
 class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
-  def apply(req: HttpRequest, service: Service[HttpRequest, HttpResponse]): Future[HttpResponse] = {
+	def apply(req: HttpRequest, service: Service[HttpRequest, HttpResponse]): Future[HttpResponse] = {
 
     val bitcoinRequest = Request(new DefaultHttpRequest(Http11, HttpMethod.POST, "/"))
     bitcoinRequest.addHeader(HttpHeaders.Names.CONTENT_TYPE, "application/x-www-form-urlencoded")
