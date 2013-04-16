@@ -98,15 +98,15 @@ class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
             bitcoinRequest.addHeader(HttpHeaders.Names.CONTENT_LENGTH, bitcoinRequest.contentString.length.toString())
             service(bitcoinRequest) map { res => {
                 val response = Response(res)
-                val response_result = parse(response.contentString) \ "result"
-                response_result match {
-                case JBool(true) => {
-                    peddleResponse.contentString = compact(render(("result" -> true)))
-                    peddleResponse
-                  }
-                  case _ => {
+                val response_result = response.contentString
+                response.contentString match {
+                  case "" => {
                     val errorResponse = Response(Http11, BadRequest)
                     peddleResponse.contentString = compact(render(("message" -> "Insufficient funds")))
+                    peddleResponse
+                  }
+                  case response_result => {
+                    peddleResponse.contentString = compact(render(("result" -> response_result)))
                     peddleResponse
                   }
                 }
