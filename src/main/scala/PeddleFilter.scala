@@ -106,7 +106,7 @@ class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
                     peddleResponse
                   }
                   case response_result => {
-                    peddleResponse.contentString = compact(render(("result" -> response_result)))
+                    peddleResponse.contentString = compact(render(("transaction" -> response_result)))
                     peddleResponse
                   }
                 }
