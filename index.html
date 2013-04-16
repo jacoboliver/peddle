@@ -95,7 +95,7 @@
 				</section>
 
 				<section class="block">
-					<h2>Get the address for an account</h2>
+					<h2>Get the addresses for an account</h2>
 					<div class="col_large description">
 						Retrieves a list of the addresses associated with an account.  These addresses are where you receive your bitcoins.  You can receive bitcoins outside of Peddle by giving this address to a buyer. The private key stays in your e-wallet (hopefully securely)
 					</div>
@@ -133,7 +133,7 @@
 					</div>
 					<div class="col_small">
 						<h2>Definition</h2>
-						<p><strong>GET</strong> /accounts/{ACCOUNT_ID}/addresses</p>
+						<p><strong>GET</strong> /accounts/{ACCOUNT_ID}/transactions</p>
 
 						<h3>Request</h3>
 						<code>
@@ -190,7 +190,7 @@
 						<code>
 							<span class="prompt">$</span>
 							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/transactions \
-	-d "from=oliverj2" \
+	-d "from=oliverj" \
 	-d "to=1Djek267TRNr5k56RCzCU7qTHsEsS34F3W" \
 	-d "amount=0.004"
 							</span>
