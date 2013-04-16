@@ -1,0 +1,304 @@
+<html>
+	<head>
+		<title>See Jake Code Peddle</title>
+    	<link rel="stylesheet" type="text/css" href="assets/style.css">
+	<head>
+	<body>
+		<div id="wrap" style="">
+			<article>
+				<section class="block">
+					<div class="col_large description">
+						<span id="name">Peddle</span> is an API for your <a href="http://bitcoin.org">Bitcoin</a> e-wallet with a <a href="http://twitter.github.io/finagle">finagle</a> backend.  With it you can create bitcoin accounts, make and receive transactions, and transfer funds all from a centralized server of your choosing.  You could even, if you choose, create e-wallets for other people and start your own e-wallet provider. Peddle puts a nicer front-end on bitcoind's built in json-rpc.
+					</div>
+					<div class="col_small">
+						<img src="assets/imgs/bitcoin.png">
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>API Reference</h2>
+					<div class="col_large description">
+						The Peddle API is built around the <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">REST</a> architectural framework. Deploying Peddle makes available an api endpoint where you can issue GET and POST requests to update your e-wallet.  All responses will be JSON-formatted, convential HTTP response codes are used.  Currently there is no user authentication.
+					</div>
+					<div class="col_small">
+						<h2>HTTP Status Codes</h2>
+						<p><strong>200 OK:</strong> total success!</p>
+						<p><strong>400 Bad Request:</strong> param missing</p>
+						<p><strong>401 Unauthorized:</strong> insufficient funds in account</p>
+						<p><strong>404 not found:</strong> requested uri doesn't exist.<p>
+						<p><strong>500, 502, 503, 504 Internal Server Error:</strong> something wrong server side</p>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Creating a new account</h2>
+					<div class="col_large description">
+						To create a new account you send along an account name. That's it! This returns an echo of the account you created.
+						<dl>
+							<dt>id</dt>
+							<dd>
+								<em>required</em>
+								<strong>string</strong>. Name of the account
+							</dd>
+						</dl>
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>POST</strong> /accounts</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/accounts \
+	-d "id=oliverj"
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"account"</span>
+							:
+							<span class="key">"oliverj"</span>
+							<span class="p">}</span>
+						</code>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Get a list of accounts</h2>
+					<div class="col_large description">
+						Retrieves a list of the accounts in your wallet plus their current balances (with at least 0 confirmations)
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>GET</strong> /accounts</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/accounts
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"accounts"</span>
+							:
+							<span class="p parr">[</span>
+							<span class="key2">"oliverj"</span>:<span class="num">1.000000</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key2">"jacoboliver"</span>:<span class="num">1.124124</span>
+							<span class="p parr">]</span>
+							</span><span class="p">}</span>
+						</code>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Get the address for an account</h2>
+					<div class="col_large description">
+						Retrieves a list of the addresses associated with an account.  These addresses are where you receive your bitcoins.  You can receive bitcoins outside of Peddle by giving this address to a buyer. The private key stays in your e-wallet (hopefully securely)
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>GET</strong> /accounts/{ACCOUNT_ID}/addresses</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/accounts/oliverj/addresses
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"addresses"</span>
+							:
+							<span class="p parr">[</span>
+							<span class="key2">"1FiKgTyvGaCS6KJAigx163sLrNkddDy2Bv"</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key2">"12Y7jU7AAREcSVp31HShFAmLTs4kT9nqBc"</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key2">"1Djek267TRNr5k56RCzCU7qTHsEsS34F3W"</span>
+							<span class="p parr">]</span>
+							</span><span class="p">}</span>
+						</code>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Get the transactions for an account</h2>
+					<div class="col_large description">
+						Retrieve a list of transactions for an account.  A transaction hash can be inspected by an online <a href="http://blockexplorer">blockchain explorer</a>
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>GET</strong> /accounts/{ACCOUNT_ID}/addresses</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/accounts/oliverj/transactions
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"transactions"</span>
+							:
+							<span class="p parr">[</span>
+							<span class="key2">"0fd8036f156736f427232628528219b3bba6c433a4592b2aee9832386e3d4a1c"</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key2">"97c571902483363d30ca6897bd392a3b4fea93b31561fc4d9faacf3e61b63a1f"</span>
+							<span class="p parr">]</span>
+							</span><span class="p">}</span>
+						</code>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Send from an account to a Bitcoin address</h2>
+					<div class="col_large description">
+						Send from an account in this wallet to any bitcoin address.  These transactions are non-reversible and can be considered confirmed after 6 blockchain confirmations.  An error is returned for insufficient funds.
+						<dl>
+							<dt>from</dt>
+							<dd>
+								<em>required</em>
+								<strong>string</strong>. Name of the account
+							</dd>
+						</dl>
+						<dl>
+							<dt>to</dt>
+							<dd>
+								<em>required</em>
+								<strong>string</strong>. Address to send funds too
+							</dd>
+						</dl>
+						<dl>
+							<dt>amount</dt>
+							<dd>
+								<em>required</em>
+								<strong>double</strong>. amount of bitcoins to send
+							</dd>
+						</dl>
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>POST</strong> /transactions</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/transactions \
+	-d "from=oliverj2" \
+	-d "to=1Djek267TRNr5k56RCzCU7qTHsEsS34F3W" \
+	-d "amount=0.004"
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"transaction"</span>
+							:
+							<span class="key2">"0fd8036f156736f427232628528219b3bba6c433a4592b2aee9832386e3d4a1c"</span>
+							</span><span class="p">}</span>
+						</code>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Get the details of a transaction</h2>
+					<div class="col_large description">
+						You can get the details on a transaction.  Details include date of transaction, confirmations, amount, and addresses involved.
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>GET</strong> /transactions/{TRANSACTION_ID}</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{HOST}:{PORT}/transactions/000d5176ac575830b55782ab8eef9e9bd9b92ad289724d5dd5f7e
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"amount"</span>:<span>0.01243</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key">"confirmations"</span>:<span>3</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key">"txid"</span>:
+							<span class="key">"000d5176ac575830b55782ab8eef9e9bd9b92ad289724d5dd5f7e"</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key">"details"</span>: 
+							<span class="p parr">{</span>
+							<span class="p parr">&nbsp;</span>
+							<span class="key d">"account"</span>:<span>"oliverj"</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key d">"address"</span>:<span>"1FiKgTyvGaCS6KJAigx163sLrNkddDy2Bv"</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key d">"category"</span>:<span>""</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key d">"amount"</span>:<span>0.01243</span>,
+							<span class="p parr">&nbsp;</span>
+							<span class="key d">"fee"</span>:<span>0.00001</span>
+							<span class="p parr">}</span>
+							</span><span class="p">}</span>
+						</code>
+					</div>
+				</section>
+
+				<section class="block">
+					<h2>Transfer between wallet accounts</h2>
+					<div class="col_large description">
+						Send from an account in this wallet to any other account in this wallet.  These transactions are immediate and irreversible.  An error is returned for insufficient funds or if one of the accounts does not exist.  Returns true on success (there is no transaction id for in-wallet balance transfers)
+						<dl>
+							<dt>from</dt>
+							<dd>
+								<em>required</em>
+								<strong>string</strong>. Name of the account
+							</dd>
+						</dl>
+						<dl>
+							<dt>to</dt>
+							<dd>
+								<em>required</em>
+								<strong>string</strong>. Account to send funds too
+							</dd>
+						</dl>
+						<dl>
+							<dt>amount</dt>
+							<dd>
+								<em>required</em>
+								<strong>double</strong>. amount of bitcoins to send
+							</dd>
+						</dl>
+					</div>
+					<div class="col_small">
+						<h2>Definition</h2>
+						<p><strong>POST</strong> /transactions</p>
+
+						<h3>Request</h3>
+						<code>
+							<span class="prompt">$</span>
+							<span class="code">curl http://{SERVER_HOST}:{SERVER_PORT}/transactions \
+	-d "from=oliverj" \
+	-d "to=jacoboliver" \
+	-d "amount=0.004"
+							</span>
+						</code>
+						<h3>Response</h3>
+						<code>
+							<span class="p">{</span>
+							<span class="key">"result"</span>
+							:
+							<span class="key2" style="color:#954121">true</span>
+							</span><span class="p">}</span>
+						</code>
+					</div>
+				</section>
+			</div>
+		</article>
+	</body>
+</html>
