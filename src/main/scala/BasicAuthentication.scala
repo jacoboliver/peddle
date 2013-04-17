@@ -2,10 +2,10 @@ package peddle
 
 import com.twitter.finagle.{Filter, Service}
 import com.twitter.util.Future
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.handler.codec.base64.Base64;
+import org.jboss.netty.buffer.ChannelBuffers
+import org.jboss.netty.handler.codec.base64.Base64
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse, HttpHeaders}
-import org.jboss.netty.util.CharsetUtil;
+import org.jboss.netty.util.CharsetUtil
 import util.Properties
 
 class BasicAuthentication()
@@ -15,9 +15,9 @@ class BasicAuthentication()
   val password = Properties.envOrElse("BITCOIN_PASSWORD", "password")
 
   def apply(request: HttpRequest, service: Service[HttpRequest, HttpResponse]): Future[HttpResponse] = {
-    val authChannelBuffer = ChannelBuffers.copiedBuffer(username + ":" + password, CharsetUtil.UTF_8);
-    val encodedAuthChannelBuffer = Base64.encode(authChannelBuffer);
-    request.addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic " + encodedAuthChannelBuffer.toString(CharsetUtil.UTF_8));
+    val authChannelBuffer = ChannelBuffers.copiedBuffer(username + ":" + password, CharsetUtil.UTF_8)
+    val encodedAuthChannelBuffer = Base64.encode(authChannelBuffer)
+    request.addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic " + encodedAuthChannelBuffer.toString(CharsetUtil.UTF_8))
     service(request)
   }
 }

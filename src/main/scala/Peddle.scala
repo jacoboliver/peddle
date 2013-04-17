@@ -7,7 +7,6 @@ import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse, HttpHeader
 import java.net.InetSocketAddress
 import util.Properties
 
-
 object Peddle extends App {
   val bitcoin_port = Properties.envOrElse("BITCOIN_PORT", "8332").toInt
   val listen_port = Properties.envOrElse("LISTEN_PORT", "8080").toInt
@@ -21,7 +20,7 @@ object Peddle extends App {
   //communicate with the bitcoin via json-rpc
   val client: Service[HttpRequest, HttpResponse] =
     Http.newService("localhost:" + bitcoin_port)
-    
+
   val service: Service[HttpRequest, HttpResponse] =
     peddleFilter andThen basicAuthFilter andThen client
 

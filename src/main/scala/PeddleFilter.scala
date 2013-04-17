@@ -11,7 +11,7 @@ import net.liftweb.json._
 import org.jboss.netty.handler.codec.http._
 
 class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
-	def apply(req: HttpRequest, service: Service[HttpRequest, HttpResponse]): Future[HttpResponse] = {
+  def apply(req: HttpRequest, service: Service[HttpRequest, HttpResponse]): Future[HttpResponse] = {
 
     val bitcoinRequest = Request(new DefaultHttpRequest(Http11, HttpMethod.POST, "/"))
     bitcoinRequest.addHeader(HttpHeaders.Names.CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -74,23 +74,23 @@ class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
       case HttpMethod.POST -> Root / "transactions" => {
         val fromAccount = request.getParam("from")
         val toAccount = request.getParam("to")
-        val amount = request.getParam("amount").toDouble
+        val amount = if (request.getParam("amount") != null) request.getParam("amount").toDouble else 0
 
         (fromAccount, toAccount, amount) match {
-          case (null , _, _) => {
+          case (null , toAccount, amount) => {
             val errorResponse = Response(Http11, BadRequest)
-            peddleResponse.contentString = compact(render(("message" -> "From Account missing") ~ ("param" -> "from")))
-            Future.value(peddleResponse)
+            errorResponse.contentString = compact(render(("message" -> "From Account missing") ~ ("param" -> "from")))
+            Future.value(errorResponse)
           }
-          case (_ , null, _) => {
+          case (fromAccount , null, amount) => {
             val errorResponse = Response(Http11, BadRequest)
-            peddleResponse.contentString = compact(render(("message" -> "To Account missing") ~ ("param" -> "to")))
-            Future.value(peddleResponse)
+            errorResponse.contentString = compact(render(("message" -> "To Account missing") ~ ("param" -> "to")))
+            Future.value(errorResponse)
           }
-          case (_ , _, 0) => {
+          case (fromAccount , toAccount, 0) => {
             val errorResponse = Response(Http11, BadRequest)
-            peddleResponse.contentString = compact(render(("message" -> "Amount missing") ~ ("param" -> "amount")))
-            Future.value(peddleResponse)
+            errorResponse.contentString = compact(render(("message" -> "Amount missing") ~ ("param" -> "amount")))
+            Future.value(errorResponse)
           }
           case (fromAccount, toAccount, amount) => {
             val json = ("method" -> "move") ~ JObject(List(JField("params",JArray(List(JString(fromAccount), JString(toAccount), JDouble(amount))))))
@@ -99,17 +99,8 @@ class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
             service(bitcoinRequest) map { res => {
                 val response = Response(res)
                 val response_result = response.contentString
-                response.contentString match {
-                  case "" => {
-                    val errorResponse = Response(Http11, BadRequest)
-                    peddleResponse.contentString = compact(render(("message" -> "Insufficient funds")))
-                    peddleResponse
-                  }
-                  case response_result => {
-                    peddleResponse.contentString = compact(render(("transaction" -> response_result)))
-                    peddleResponse
-                  }
-                }
+                peddleResponse.contentString = compact(render(("transaction" -> response_result)))
+                peddleResponse
               }
             }
           }
@@ -131,23 +122,22 @@ class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
       case HttpMethod.POST -> Root / "transfer" => {
         val fromAccount = request.getParam("from")
         val toAccount = request.getParam("to")
-        val amount = request.getParam("amount").toDouble
-
+        val amount = if (request.getParam("amount") != null) request.getParam("amount").toDouble else 0
         (fromAccount, toAccount, amount) match {
-          case (null , _, _) => {
+          case (null , toAccount, amount) => {
             val errorResponse = Response(Http11, BadRequest)
-            peddleResponse.contentString = compact(render(("message" -> "From Account missing") ~ ("param" -> "from")))
-            Future.value(peddleResponse)
+            errorResponse.contentString = compact(render(("message" -> "From Account missing") ~ ("param" -> "from")))
+            Future.value(errorResponse)
           }
-          case (_ , null, _) => {
+          case (fromAccount , null, amount) => {
             val errorResponse = Response(Http11, BadRequest)
-            peddleResponse.contentString = compact(render(("message" -> "To Account missing") ~ ("param" -> "to")))
-            Future.value(peddleResponse)
+            errorResponse.contentString = compact(render(("message" -> "To Account missing") ~ ("param" -> "to")))
+            Future.value(errorResponse)
           }
-          case (_ , _, 0) => {
+          case (fromAccount, toAccount, 0) => {
             val errorResponse = Response(Http11, BadRequest)
-            peddleResponse.contentString = compact(render(("message" -> "Amount missing") ~ ("param" -> "amount")))
-            Future.value(peddleResponse)
+            errorResponse.contentString = compact(render(("message" -> "Amount missing") ~ ("param" -> "amount")))
+            Future.value(errorResponse)
           }
           case (fromAccount, toAccount, amount) => {
             val json = ("method" -> "move") ~ JObject(List(JField("params",JArray(List(JString(fromAccount), JString(toAccount), JDouble(amount))))))
@@ -163,8 +153,8 @@ class PeddleFilter extends SimpleFilter[HttpRequest, HttpResponse] {
                   }
                   case _ => {
                     val errorResponse = Response(Http11, BadRequest)
-                    peddleResponse.contentString = compact(render(("message" -> "Insufficient funds")))
-                    peddleResponse
+                    errorResponse.contentString = compact(render(("message" -> "Insufficient funds")))
+                    errorResponse
                   }
                 }
               }
